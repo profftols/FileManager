@@ -3,52 +3,75 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Text.Json;
 using System.IO;
 using System.Diagnostics;
+using System.ComponentModel.Design;
+using System.Xml.Serialization;
 
 namespace FileManager
 {
     internal class Program
     {
+        static int num = 1;
         static void Main(string[] args)
         {
-            string ask = "D:\\";
-            Form();
-            FileTree(ask);
-            RequestUser();
+            PrintDriver(0); // вывод на консоль каталога накопителей
+            MenuManager();
+
+            Console.WriteLine("Программа завершилась, нажмите Enter");
+            Console.ReadKey();
         }
 
-        static int RequestUser()
+        static void MenuManager()
         {
-            int choice = 1;
-            switch (choice)
+            try
             {
-                case 1:
-                    
-                default:
-                    break;
+                int chce = int.Parse(Console.ReadLine());
+                PrintDriver(chce);
+
             }
-            return choice;
+            catch
+            {
+                Console.WriteLine($"Ошибка! Вы не выбрали значение от 1 до {num} ");
+            }
+            finally { num = 1; }
         }
 
-        static void Form()
+        static void PrintInformation(string ask)
+        {
+            string[] files = Directory.GetFiles(ask);
+
+            foreach (var item in files)
+            {
+                Console.WriteLine(item);
+            }
+            Form();
+        }
+
+        static void Form() //Поля для ограничения разделов
         {
             Console.WriteLine("----------------------------------------------------------------------------------------------------------");
         }
 
-        static void FileTree(string ask)
+        static void PrintDriver(int choice)
         {
-            int num = 1;
             DriveInfo[] direc = DriveInfo.GetDrives();
-            foreach (var print in direc)
+
+            if (choice != 0)
             {
-                Console.WriteLine($"{num++}- {print}");
+
+
+                for (int i = 0; i < direc.Length; i++)
+                {
+                    
+                }
+            }
+            else
+            {
+                foreach (var print in direc)
+                {
+                    Console.WriteLine($"{num++}- {print}");
+                }
             }
             Form();
-            Console.WriteLine("Файлы:");
-            string[] files = Directory.GetFiles(ask);
-            foreach (string s in files)
-            {
-                Console.WriteLine(s);
-            }
         }
     }
 }
