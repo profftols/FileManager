@@ -2,7 +2,7 @@
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text.Json;
 using System.IO;
-
+using System.Diagnostics;
 
 namespace FileManager
 {
@@ -13,6 +13,20 @@ namespace FileManager
             string ask = "D:\\";
             Form();
             FileTree(ask);
+            RequestUser();
+        }
+
+        static int RequestUser()
+        {
+            int choice = 1;
+            switch (choice)
+            {
+                case 1:
+                    
+                default:
+                    break;
+            }
+            return choice;
         }
 
         static void Form()
@@ -22,10 +36,11 @@ namespace FileManager
 
         static void FileTree(string ask)
         {
-            string[] direc = Directory.GetFileSystemEntries(ask);
-            foreach (string print in direc)
+            int num = 1;
+            DriveInfo[] direc = DriveInfo.GetDrives();
+            foreach (var print in direc)
             {
-                Console.WriteLine(print);
+                Console.WriteLine($"{num++}- {print}");
             }
             Form();
             Console.WriteLine("Файлы:");
