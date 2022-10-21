@@ -5,40 +5,54 @@ using System.IO;
 using System.Diagnostics;
 using System.ComponentModel.Design;
 using System.Xml.Serialization;
+using System.Threading.Tasks;
 
 namespace FileManager
 {
     internal class Program
     {
-        static int num = 1;
-        static void Main(string[] args)
+        private static int num = 1;
+        private static string disc;
+        private static string pathfile;
+        private static string pathfolder;
+        static void Form() //Поля для ограничения разделов
         {
-            PrintDriver(0); // вывод на консоль каталога накопителей
+            Console.WriteLine("----------------------------------------------------------------------------------------------------------");
+        }
+        static void Main(string[] args) //                          >>>>> ТОЧКА ВХОДА <<<<<<<
+        {
             MenuManager();
-
-            Console.WriteLine("Программа завершилась, нажмите Enter");
-            Console.ReadKey();
         }
 
-        static void MenuManager()
+        static void MenuManager() // Меню выбора ввода пользователя и передача методам выбор
         {
-            try
+            if (num == 1)
             {
-                int chce = int.Parse(Console.ReadLine());
-                PrintDriver(chce);
+                PrintDriverDisc(0);
+            }
 
-            }
-            catch
-            {
-                Console.WriteLine($"Ошибка! Вы не выбрали значение от 1 до {num} ");
-            }
-            finally { num = 1; }
+            PrintDriverDisc(UserCh()-1);
+            PrintFolder(pathfolder);
         }
 
-        static void PrintInformation(string ask)
+        static int UserCh()
         {
-            string[] files = Directory.GetFiles(ask);
+            Form();
+            int i = int.Parse(Console.ReadLine());
+            return i;
+        }
 
+        static void PrintFolder(string fol)
+        {
+            Console.WriteLine("Папки:");
+            string[] folders = Directory.GetDirectories(fol);
+            for (int i = 0; i < folders.Length; i++)
+            {
+                Console.WriteLine(folders[i]);
+            }
+
+            Console.WriteLine("Файлы:");
+            string[] files = Directory.GetFiles(fol);
             foreach (var item in files)
             {
                 Console.WriteLine(item);
@@ -46,23 +60,22 @@ namespace FileManager
             Form();
         }
 
-        static void Form() //Поля для ограничения разделов
+        static void Inform (string ask) // Печать информации в папках и файлах
         {
-            Console.WriteLine("----------------------------------------------------------------------------------------------------------");
+            
+            Form();
         }
 
-        static void PrintDriver(int choice)
+        static void PrintDriverDisc(int i) // Печать диска и его сохранение
         {
             DriveInfo[] direc = DriveInfo.GetDrives();
 
-            if (choice != 0)
+            if (num != 1)
             {
-
-
-                for (int i = 0; i < direc.Length; i++)
-                {
-                    
-                }
+                Console.Clear();
+                disc = direc[i].ToString();
+                pathfolder = disc;
+                return;
             }
             else
             {
@@ -70,8 +83,9 @@ namespace FileManager
                 {
                     Console.WriteLine($"{num++}- {print}");
                 }
+                Form();
             }
-            Form();
+            Console.WriteLine("Приветствую в программе: Файловый менеджер! \n Тут будет отобраться файлы и их информация");
         }
     }
 }
