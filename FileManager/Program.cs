@@ -31,9 +31,6 @@ namespace FileManager
                 PrintDriverDisc(0);
             }
 
-            PrintDriverDisc(UserCh());
-            PrintFolder(pathfolder, 1);
-
             do
             {
                 string command = Console.ReadLine();
@@ -42,7 +39,7 @@ namespace FileManager
                 {
                     case "ls":
                         page = int.Parse(com[3]);
-                        PrintFolder(com[1], page);
+                        PrintFolder(com[1], page-1);
                         break;
 
                     case "cp":
@@ -64,33 +61,50 @@ namespace FileManager
             } while (true);
         }
 
-        static int UserCh()
+        /*static int UserCh()
         {
             Form();
             int i = int.Parse(Console.ReadLine());
             return i - 1;
-        }
+        }*/
 
         static void PrintFolder(string fol, int npage)
         {
             string[] folders = Directory.GetDirectories(fol);
-            int page = folders.Length % 7;
-
-
-
-            Console.WriteLine("Папки:");
-            for (int i = 0; i < folders.Length; i++)
-            {
-                Console.WriteLine(folders[i]);
-            }
-
-            Console.WriteLine($"Файлы в папке {fol}:");
             string[] files = Directory.GetFiles(fol);
-            foreach (var item in files)
+            int page = (folders.Length + files.Length) % 5;
+
+            string[,] mass = new string [page, 6];
+
+            for (int i = 0, k = 0, p = 0; i < mass.GetLength(0); i++)
             {
-                Console.WriteLine(item);
+                for (int j = 0; j < mass.GetLength(1); j++, k++)
+                {
+                    if (k <= folders.Length - 1)
+                        mass[i, j] = folders[k];
+                    else if (p <= files.Length - 1)
+                    {
+                        mass[i, j] = files[p];
+                        p++;
+                    }
+                }
+            }
+            try
+            {
+                for (int i = 0; i < mass.GetLength(1); i++)
+                {
+                    if (mass[npage, i] == null)
+                        return;
+                    Console.WriteLine(mass[npage, i]);
+                }
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("Вы ввели некооректную страницу.");
+                throw;
             }
             Form();
+            Console.WriteLine($"страница:{npage+1}...{page}");
         }
 
         static void Inform(string ask) // Печать информации в папках и файлах
