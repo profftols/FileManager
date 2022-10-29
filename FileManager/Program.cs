@@ -11,9 +11,8 @@ namespace FileManager
 {
     internal class Program
     {
-        private static int num = 1;
-        private static int page;
-        private static string disc;
+        private static int _num = 1, _page;
+        private static string _disc;
         private static string pathfolder;
         static void Form() //Поля для ограничения разделов
         {
@@ -26,7 +25,7 @@ namespace FileManager
 
         static void MenuManager() // Меню выбора ввода пользователя и передача методам выбор
         {
-            if (num == 1)
+            if (_num == 1)
             {
                 PrintDriverDisc(0);
             }
@@ -38,12 +37,12 @@ namespace FileManager
                 switch (com[0])
                 {
                     case "ls":
-                        page = int.Parse(com[3]);
-                        PrintFolder(com[1], page-1);
+                        _page = int.Parse(com[3]);
+                        PrintFolder(com[1], _page - 1);
                         break;
 
                     case "cp":
-
+                        CopyDir(com[1], com[2]);
                         break;
 
                     case "rm":
@@ -61,20 +60,42 @@ namespace FileManager
             } while (true);
         }
 
-        /*static int UserCh()
+        static void CopyDir(string copy, string paste)
         {
-            Form();
-            int i = int.Parse(Console.ReadLine());
-            return i - 1;
-        }*/
+            try
+            {
+                if (Directory.Exists(copy) == false)
+                {
+                    File.Copy(copy, paste);
+                }
+                else
+                {
+                    Directory.CreateDirectory(paste);
+                    foreach (string s1 in Directory.GetFiles(copy))
+                    {
+                        string s2 = paste + "\\" + Path.GetFileName(s1);
+                        File.Copy(s1, s2);
+                    }
+                    foreach (string s in Directory.GetDirectories(copy))
+                    {
+                        CopyDir(s, paste + "\\" + Path.GetFileName(s));
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+        }
 
         static void PrintFolder(string fol, int npage)
         {
             string[] folders = Directory.GetDirectories(fol);
             string[] files = Directory.GetFiles(fol);
+
             int page = (folders.Length + files.Length) % 5;
 
-            string[,] mass = new string [page, 6];
+            string[,] mass = new string[page, 6];
 
             for (int i = 0, k = 0, p = 0; i < mass.GetLength(0); i++)
             {
@@ -98,13 +119,13 @@ namespace FileManager
                     Console.WriteLine(mass[npage, i]);
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                Console.WriteLine("Вы ввели некооректную страницу.");
+                Console.WriteLine($"Вы ввели некооректную страницу {e.Message}.");
                 throw;
             }
             Form();
-            Console.WriteLine($"страница:{npage+1}...{page}");
+            Console.WriteLine($"страница:{npage + 1}...{page}");
         }
 
         static void Inform(string ask) // Печать информации в папках и файлах
@@ -117,18 +138,17 @@ namespace FileManager
         {
             DriveInfo[] direc = DriveInfo.GetDrives();
 
-            if (num != 1)
+            if (_num != 1)
             {
                 Console.Clear();
-                disc = direc[i].ToString();
-                pathfolder = disc;
+                _disc = direc[i].ToString(); // _disc показывать в каком каталоге мы находимся
                 return;
             }
             else
             {
                 foreach (var print in direc)
                 {
-                    Console.WriteLine($"{num++}- {print}");
+                    Console.WriteLine($"{_num++}- {print}");
                 }
                 Form();
             }
