@@ -27,17 +27,18 @@ namespace FileManager
         {
             if (_num == 1)
             {
-                PrintDriverDisc(0);
+                //PrintDriverDisc(0);
             }
 
             do
             {
                 string command = Console.ReadLine();
+                Console.Clear();
                 string[] com = command.Split(' ');
                 switch (com[0])
                 {
                     case "ls":
-                        _page = int.Parse(com[3]);
+                        _page = int.Parse(com[2]);
                         PrintFolder(com[1], _page - 1);
                         break;
 
@@ -46,11 +47,11 @@ namespace FileManager
                         break;
 
                     case "rm":
-
+                        DeleteDir(com[1]);
                         break;
 
                     case "file":
-
+                        Inform(com[1]); // доделать
                         break;
 
                     default:
@@ -60,11 +61,29 @@ namespace FileManager
             } while (true);
         }
 
+        static string DeleteDir(string del)
+        {
+            if (!File.Exists(del))
+            {
+                string[] dir = Directory.GetFileSystemEntries(del, "*", SearchOption.AllDirectories);
+                for (int i = 0; i < dir.Length; i++)
+                {
+                    if (File.Exists(dir[i])) File.Delete(dir[i]);
+                    else if (Directory.Exists(dir[i])) return DeleteDir(dir[i]);
+                }
+                Directory.Delete(del);
+            }
+            else
+            {
+                File.Delete(del);
+            }
+            return null;
+        }
         static void CopyDir(string copy, string paste)
         {
             try
             {
-                if (Directory.Exists(copy) == false)
+                if (!Directory.Exists(copy))
                 {
                     File.Copy(copy, paste);
                 }
