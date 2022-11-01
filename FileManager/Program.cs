@@ -79,12 +79,6 @@ namespace FileManager
                     }
                 }
                 Directory.Delete(del);
-                /*
-                if (_pathfolder == del)
-                {
-                    return;
-                }
-                */
             }
             else
             {
