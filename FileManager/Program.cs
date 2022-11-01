@@ -12,8 +12,7 @@ namespace FileManager
     internal class Program
     {
         private static int _num = 1, _page;
-        private static string _disc;
-        private static string pathfolder;
+        private static string _disc, _pathfolder;
         static void Form() //Поля для ограничения разделов
         {
             Console.WriteLine("----------------------------------------------------------------------------------------------------------");
@@ -47,6 +46,7 @@ namespace FileManager
                         break;
 
                     case "rm":
+                        _pathfolder = com[1];
                         DeleteDir(com[1]);
                         break;
 
@@ -61,23 +61,35 @@ namespace FileManager
             } while (true);
         }
 
-        static string DeleteDir(string del)
+        static void DeleteDir(string del)
         {
             if (!File.Exists(del))
             {
-                string[] dir = Directory.GetFileSystemEntries(del, "*", SearchOption.AllDirectories);
-                for (int i = 0; i < dir.Length; i++)
+                string[] dir = Directory.GetFileSystemEntries(del);
+
+                foreach (var item in dir)
                 {
-                    if (File.Exists(dir[i])) File.Delete(dir[i]);
-                    else if (Directory.Exists(dir[i])) return DeleteDir(dir[i]);
+                    if (Directory.Exists(item))
+                    {
+                        DeleteDir(item);
+                    }
+                    if (File.Exists(item))
+                    {
+                        File.Delete(item);
+                    }
                 }
                 Directory.Delete(del);
+                /*
+                if (_pathfolder == del)
+                {
+                    return;
+                }
+                */
             }
             else
             {
                 File.Delete(del);
             }
-            return null;
         }
         static void CopyDir(string copy, string paste)
         {
