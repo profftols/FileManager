@@ -34,30 +34,38 @@ namespace FileManager
                 string command = Console.ReadLine();
                 Console.Clear();
                 string[] com = command.Split(' ');
-                switch (com[0])
+                try
                 {
-                    case "ls":
-                        _page = int.Parse(com[2]);
-                        PrintFolder(com[1], _page - 1);
-                        break;
+                    switch (com[0])
+                    {
+                        case "ls":
+                            _page = int.Parse(com[2]);
+                            PrintFolder(com[1], _page - 1);
+                            break;
 
-                    case "cp":
-                        CopyDir(com[1], com[2]);
-                        break;
+                        case "cp":
+                            CopyDir(com[1], com[2]);
+                            break;
 
-                    case "rm":
-                        _pathfolder = com[1];
-                        DeleteDir(com[1]);
-                        break;
+                        case "rm":
+                            _pathfolder = com[1];
+                            DeleteDir(com[1]);
+                            break;
 
-                    case "file":
-                        Inform(com[1]); // доделать
-                        break;
+                        case "file":
+                            Inform(com[1]);
+                            break;
 
-                    default:
-                        Console.WriteLine("Вы ввели неверное значение!");
-                        break;
+                        default:
+                            Console.WriteLine("Вы ввели неверное значение!");
+                            break;
+                    }
                 }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                }
+                
             } while (true);
         }
 
@@ -153,10 +161,18 @@ namespace FileManager
             Console.WriteLine($"страница:{npage + 1}...{page}");
         }
 
-        static void Inform(string ask) // Печать информации в папках и файлах
+        static void Inform(string name) // Печать информации в папках и файлах
         {
-
-            Form();
+            if (Directory.Exists(name))
+            {
+                DirectoryInfo dirInfo = new DirectoryInfo(name);
+                Console.WriteLine($"Название каталога: {dirInfo.Name} \nВремя создания каталога: {dirInfo.CreationTime} \nКорневой каталог: {dirInfo.Root} ");
+            }
+            else
+            {
+                FileInfo fileInfo = new FileInfo(name);
+                Console.WriteLine($"Название файла: {fileInfo.FullName} \nРазмер файла: {fileInfo.Length} байт \nРасширение файла: {fileInfo.Extension}");
+            }
         }
 
         static void PrintDriverDisc(int i) // Печать диска и его сохранение
