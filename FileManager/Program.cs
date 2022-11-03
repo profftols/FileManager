@@ -17,7 +17,7 @@ namespace FileManager
         {
             Console.WriteLine("----------------------------------------------------------------------------------------------------------");
         }
-        static void Main(string[] args) //                          >>>>> ТОЧКА ВХОДА <<<<<<<
+        static void Main(string[] args)
         {
             MenuManager();
         }
@@ -39,8 +39,8 @@ namespace FileManager
                     switch (com[0])
                     {
                         case "ls":
-                            _page = int.Parse(com[2]);
-                            PrintFolder(com[1], _page - 1);
+                            int npage = int.Parse(com[2]);
+                            PrintFolder(com[1], npage - 1);
                             break;
 
                         case "cp":
@@ -126,9 +126,12 @@ namespace FileManager
             string[] folders = Directory.GetDirectories(fol);
             string[] files = Directory.GetFiles(fol);
 
-            int page = (folders.Length + files.Length) % 5;
+            _page = (folders.Length + files.Length) / 25;
+            double page = (folders.Length + files.Length) / 25.0;
 
-            string[,] mass = new string[page, 6];
+            if (page > _page) _page++;
+
+            string[,] mass = new string[_page, 25];
 
             for (int i = 0, k = 0, p = 0; i < mass.GetLength(0); i++)
             {
@@ -148,7 +151,7 @@ namespace FileManager
                 for (int i = 0; i < mass.GetLength(1); i++)
                 {
                     if (mass[npage, i] == null)
-                        return;
+                        continue;
                     Console.WriteLine(mass[npage, i]);
                 }
             }
@@ -158,7 +161,7 @@ namespace FileManager
                 throw;
             }
             Form();
-            Console.WriteLine($"страница:{npage + 1}...{page}");
+            Console.WriteLine($"страница:{npage + 1}...{_page}");
         }
 
         static void Inform(string name) // Печать информации в папках и файлах
