@@ -148,11 +148,30 @@ namespace FileManager
             }
             try
             {
+                Console.WriteLine($"Путь: {fol}");
                 for (int i = 0; i < mass.GetLength(1); i++)
                 {
                     if (mass[npage, i] == null)
                         continue;
-                    Console.WriteLine(mass[npage, i]);
+
+                    if (Directory.Exists(mass[npage, i]))
+                    {
+                        DirectoryInfo print = new DirectoryInfo(mass[npage, i]);
+                        Console.WriteLine($"--{print.Name}");
+
+                        string[] inpage = Directory.GetDirectories(mass[npage, i]);
+                        foreach (string pri in inpage)
+                        {
+                            DirectoryInfo prin = new DirectoryInfo(pri);
+                            Console.WriteLine($"\t|_{prin.Name}");
+                        }
+                    }
+                    else
+                    {
+                        FileInfo print = new FileInfo(mass[npage, i]);
+                        Console.WriteLine($"{print.Name}");
+                    }
+
                 }
             }
             catch (Exception e)
