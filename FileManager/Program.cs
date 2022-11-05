@@ -11,8 +11,8 @@ namespace FileManager
 {
     internal class Program
     {
-        private static int _num = 1, _page;
-        private static string _disc, _pathfolder;
+        private static int _num = 1;
+        private static int _page;
         static void Form() //Поля для ограничения разделов
         {
             Console.WriteLine("----------------------------------------------------------------------------------------------------------");
@@ -24,11 +24,7 @@ namespace FileManager
 
         static void MenuManager() // Меню выбора ввода пользователя и передача методам выбор
         {
-            if (_num == 1)
-            {
-                //PrintDriverDisc(0);
-            }
-
+            PrintDriverDisc();
             do
             {
                 string command = Console.ReadLine();
@@ -48,7 +44,6 @@ namespace FileManager
                             break;
 
                         case "rm":
-                            _pathfolder = com[1];
                             DeleteDir(com[1]);
                             break;
 
@@ -65,7 +60,7 @@ namespace FileManager
                 {
                     Console.WriteLine(e.Message);
                 }
-                
+
             } while (true);
         }
 
@@ -137,9 +132,9 @@ namespace FileManager
             {
                 for (int j = 0; j < mass.GetLength(1); j++, k++)
                 {
-                    if (k <= folders.Length - 1)
+                    if (k <= folders.Length - 1) // Реализация помещения папок в массив для постраничного ввода
                         mass[i, j] = folders[k];
-                    else if (p <= files.Length - 1)
+                    else if (p <= files.Length - 1) // Аналогичный процесс для файлов если папки кончились
                     {
                         mass[i, j] = files[p];
                         p++;
@@ -151,25 +146,25 @@ namespace FileManager
                 Console.WriteLine($"Путь: {fol}");
                 for (int i = 0; i < mass.GetLength(1); i++)
                 {
-                    if (mass[npage, i] == null)
+                    if (mass[npage, i] == null) // пропуск пустык ячеек если суммарно файлов и папко не кратно делению на постраничный ввод
                         continue;
 
                     if (Directory.Exists(mass[npage, i]))
                     {
                         DirectoryInfo print = new DirectoryInfo(mass[npage, i]);
-                        Console.WriteLine($"--{print.Name}");
+                        Console.WriteLine($"   --{print.Name}");
 
                         string[] inpage = Directory.GetDirectories(mass[npage, i]);
                         foreach (string pri in inpage)
                         {
                             DirectoryInfo prin = new DirectoryInfo(pri);
-                            Console.WriteLine($"\t|_{prin.Name}");
+                            Console.WriteLine($"\t|_{prin.Name}"); // вывод папок в папке для красивого дерева и возможности зайти куда нибудь
                         }
                     }
                     else
                     {
                         FileInfo print = new FileInfo(mass[npage, i]);
-                        Console.WriteLine($"{print.Name}");
+                        Console.WriteLine($"   {print.Name}");
                     }
 
                 }
@@ -197,24 +192,14 @@ namespace FileManager
             }
         }
 
-        static void PrintDriverDisc(int i) // Печать диска и его сохранение
+        static void PrintDriverDisc() // Печать диска и его сохранение
         {
             DriveInfo[] direc = DriveInfo.GetDrives();
 
-            if (_num != 1)
-            {
-                Console.Clear();
-                _disc = direc[i].ToString(); // _disc показывать в каком каталоге мы находимся
-                return;
-            }
-            else
-            {
-                foreach (var print in direc)
-                {
-                    Console.WriteLine($"{_num++}- {print}");
-                }
-                Form();
-            }
+            foreach (var print in direc)
+                Console.WriteLine($"{_num++}- {print}");
+
+            Form();
             Console.WriteLine("Приветствую в программе: Файловый менеджер! \nтут будет отобраться файлы и их информация");
         }
     }
