@@ -11,8 +11,11 @@ namespace FileManager
 {
     internal class Program
     {
-        private static int _num = 1;
         private static int _page;
+
+        public static double _pageoutput = 25.0;
+        public static int _divider = 25;
+
         static void Form() //Поля для ограничения разделов
         {
             Console.WriteLine("----------------------------------------------------------------------------------------------------------");
@@ -25,6 +28,8 @@ namespace FileManager
         static void MenuManager() // Меню выбора ввода пользователя и передача методам выбор
         {
             PrintDriverDisc();
+            Console.WriteLine("Приветствую в программе файловый менеджер, введите команду для заходи в диск");
+            Form();
             do
             {
                 string command = Console.ReadLine();
@@ -121,12 +126,12 @@ namespace FileManager
             string[] folders = Directory.GetDirectories(fol);
             string[] files = Directory.GetFiles(fol);
 
-            _page = (folders.Length + files.Length) / 25;
-            double page = (folders.Length + files.Length) / 25.0;
+            _page = (folders.Length + files.Length) / _divider;
+            double page = (folders.Length + files.Length) / _pageoutput;
 
-            if (page > _page) _page++;
+            if (page > _page) _page++; //Сравниваем числа на целое или не целое, что бы дополнить десятичное число дополнительной страницей 
 
-            string[,] mass = new string[_page, 25];
+            string[,] mass = new string[_page, _divider];
 
             for (int i = 0, k = 0, p = 0; i < mass.GetLength(0); i++)
             {
@@ -141,41 +146,48 @@ namespace FileManager
                     }
                 }
             }
-            try
+
+            if (npage + 1 <= _page && npage >= 0)
             {
                 Console.WriteLine($"Путь: {fol}");
                 for (int i = 0; i < mass.GetLength(1); i++)
                 {
-                    if (mass[npage, i] == null) // пропуск пустык ячеек если суммарно файлов и папко не кратно делению на постраничный ввод
-                        continue;
-
-                    if (Directory.Exists(mass[npage, i]))
+                    try
                     {
-                        DirectoryInfo print = new DirectoryInfo(mass[npage, i]);
-                        Console.WriteLine($"   --{print.Name}");
+                        if (mass[npage, i] == null) // пропуск пустык ячеек если суммарно файлов и папки не кратно делению на постраничный ввод
+                            continue;
 
-                        string[] inpage = Directory.GetDirectories(mass[npage, i]);
-                        foreach (string pri in inpage)
+                        if (Directory.Exists(mass[npage, i]))
                         {
-                            DirectoryInfo prin = new DirectoryInfo(pri);
-                            Console.WriteLine($"\t|_{prin.Name}"); // вывод папок в папке для красивого дерева и возможности зайти куда нибудь
+                            DirectoryInfo print = new DirectoryInfo(mass[npage, i]);
+                            Console.WriteLine($"   --{print.Name}");
+
+                            string[] inpage = Directory.GetDirectories(mass[npage, i]);
+                            foreach (string pri in inpage)
+                            {
+                                DirectoryInfo prin = new DirectoryInfo(pri);
+                                Console.WriteLine($"\t|_{prin.Name}"); // вывод папок в папке для красивого дерева и возможности зайти куда нибудь
+                            }
+                        }
+                        else
+                        {
+                            FileInfo print = new FileInfo(mass[npage, i]);
+                            Console.WriteLine($"   {print.Name}");
                         }
                     }
-                    else
+                    catch (Exception)
                     {
-                        FileInfo print = new FileInfo(mass[npage, i]);
-                        Console.WriteLine($"   {print.Name}");
+                        Console.WriteLine("\tК этой папке нет доступа");
                     }
-
                 }
             }
-            catch (Exception e)
+            else
             {
-                Console.WriteLine($"Вы ввели некооректную страницу {e.Message}.");
-                throw;
+                PrintDriverDisc();
+                Console.WriteLine("Вы ввели неправильную страницу");
             }
             Form();
-            Console.WriteLine($"страница:{npage + 1}...{_page}");
+            Console.WriteLine($"страница:{npage + 1}..из..{_page}");
         }
 
         static void Inform(string name) // Печать информации в папках и файлах
@@ -197,10 +209,9 @@ namespace FileManager
             DriveInfo[] direc = DriveInfo.GetDrives();
 
             foreach (var print in direc)
-                Console.WriteLine($"{_num++}- {print}");
+                Console.WriteLine($"--{print}");
 
             Form();
-            Console.WriteLine("Приветствую в программе: Файловый менеджер! \nтут будет отобраться файлы и их информация");
         }
     }
 }
