@@ -6,22 +6,30 @@ using System.Diagnostics;
 using System.ComponentModel.Design;
 using System.Xml.Serialization;
 using System.Threading.Tasks;
+using System.Text.Json.Serialization;
 
 namespace FileManager
 {
-    internal class Program
+    public class Program
     {
         private static int _page;
 
-        public static double _pageoutput = 25.0;
-        public static int _divider = 25;
+        public static double decipage { get; set; }
+        public static int intepage { get; set; }
+        public static string savedir { get; set; }
 
-        static void Form() //Поля для ограничения разделов
-        {
-            Console.WriteLine("----------------------------------------------------------------------------------------------------------");
-        }
         static void Main(string[] args)
         {
+            SerSave serSave = new SerSave();
+            serSave.SeriJson();
+            intepage = serSave.Intepage;
+            decipage = serSave.Intepage;
+            savedir = serSave.Savedir;
+            string json = JsonSerializer.Serialize(serSave);
+
+            Console.WriteLine(json);
+            File.WriteAllText("config.json", json);
+
             MenuManager();
         }
 
@@ -55,6 +63,9 @@ namespace FileManager
                         case "file":
                             Inform(com[1]);
                             break;
+
+                        case "save":
+                            return;
 
                         default:
                             Console.WriteLine("Вы ввели неверное значение!");
@@ -126,12 +137,12 @@ namespace FileManager
             string[] folders = Directory.GetDirectories(fol);
             string[] files = Directory.GetFiles(fol);
 
-            _page = (folders.Length + files.Length) / _divider;
-            double page = (folders.Length + files.Length) / _pageoutput;
+            _page = (folders.Length + files.Length) / intepage;
+            double page = (folders.Length + files.Length) / decipage;
 
             if (page > _page) _page++; //Сравниваем числа на целое или не целое, что бы дополнить десятичное число дополнительной страницей 
 
-            string[,] mass = new string[_page, _divider];
+            string[,] mass = new string[_page, intepage];
 
             for (int i = 0, k = 0, p = 0; i < mass.GetLength(0); i++)
             {
@@ -212,6 +223,10 @@ namespace FileManager
                 Console.WriteLine($"--{print}");
 
             Form();
+        }
+        static void Form() //Поля для ограничения разделов
+        {
+            Console.WriteLine("----------------------------------------------------------------------------------------------------------");
         }
     }
 }
