@@ -7,36 +7,50 @@ using System.ComponentModel.Design;
 using System.Xml.Serialization;
 using System.Threading.Tasks;
 using System.Text.Json.Serialization;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace FileManager
 {
     public class Program
     {
         private static int _page;
+        private const string _nameJsonFile = "config.json";
+        public static double Decipage { get; set; }
+        public static int Intepage { get; set; }
+        public static string Savedir { get; set; }
 
-        public static double decipage { get; set; }
-        public static int intepage { get; set; }
-        public static string savedir { get; set; }
-
-        static void Main(string[] args)
+        static void Main()
         {
             SerSave serSave = new SerSave();
-            serSave.SeriJson();
-            intepage = serSave.Intepage;
-            decipage = serSave.Intepage;
-            savedir = serSave.Savedir;
-            string json = JsonSerializer.Serialize(serSave);
 
-            Console.WriteLine(json);
-            File.WriteAllText("config.json", json);
+            try
+            {
+                string objectdesir = File.ReadAllText(_nameJsonFile);
+                serSave = JsonSerializer.Deserialize<SerSave>(objectdesir);
+                Savedir = serSave.Savedir;
+            }
+            catch (Exception)
+            {
+                PrintDriverDisc();
+                Console.WriteLine("Приветствую в программе файловый менеджер, введите команду для заходи в диск");
+            }
+
+            Intepage = serSave.Intepage;
+            Decipage = serSave.Intepage;
 
             MenuManager();
+
+            serSave.Savedir = Savedir;
+            string json = JsonSerializer.Serialize(serSave);
+            File.WriteAllText(_nameJsonFile, json);
         }
 
         static void MenuManager() // Меню выбора ввода пользователя и передача методам выбор
         {
-            PrintDriverDisc();
-            Console.WriteLine("Приветствую в программе файловый менеджер, введите команду для заходи в диск");
+            if (Savedir != null)
+            {
+                PrintFolder(Savedir, 0);
+            }
             Form();
             do
             {
@@ -137,12 +151,12 @@ namespace FileManager
             string[] folders = Directory.GetDirectories(fol);
             string[] files = Directory.GetFiles(fol);
 
-            _page = (folders.Length + files.Length) / intepage;
-            double page = (folders.Length + files.Length) / decipage;
+            _page = (folders.Length + files.Length) / Intepage;
+            double page = (folders.Length + files.Length) / Decipage;
 
             if (page > _page) _page++; //Сравниваем числа на целое или не целое, что бы дополнить десятичное число дополнительной страницей 
 
-            string[,] mass = new string[_page, intepage];
+            string[,] mass = new string[_page, Intepage];
 
             for (int i = 0, k = 0, p = 0; i < mass.GetLength(0); i++)
             {
@@ -199,6 +213,8 @@ namespace FileManager
             }
             Form();
             Console.WriteLine($"страница:{npage + 1}..из..{_page}");
+            
+            Savedir = fol;
         }
 
         static void Inform(string name) // Печать информации в папках и файлах

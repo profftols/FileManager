@@ -12,18 +12,5 @@ namespace FileManager
     {
         public int Intepage { get; set; } = 25;
         public string Savedir { get; set; }
-
-        public void SeriJson ()
-        {
-            var serSave = new Program();
-
-            /*
-            string json = JsonSerializer.Serialize(serSave);
-
-            Console.WriteLine(json);
-            File.WriteAllText("config.json", json);
-            */
-        }
-
     }
 }
