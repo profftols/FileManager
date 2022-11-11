@@ -94,6 +94,7 @@ namespace FileManager
                 File.Delete(del);
             }
         }
+
         public void CopyDir(string copy, string paste)
         {
             try
