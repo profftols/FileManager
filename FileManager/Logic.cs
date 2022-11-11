@@ -14,7 +14,7 @@ namespace FileManager
         private int _page;
         private double Decipage { get; set; }
         public int ElementPrint { get; set; } = 25;
-        private string Savedir { get; set; }
+        public string Savedir { get; set; }
 
         public void MenuManager() // Меню выбора ввода пользователя и передача методам выбор
         {
